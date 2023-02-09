@@ -1,5 +1,9 @@
 package callbusLab.zaritalk.Assignment.global.config;
 
+import callbusLab.zaritalk.Assignment.global.config.jwt.JwtAccessDeniedHandler;
+import callbusLab.zaritalk.Assignment.global.config.jwt.JwtAuthenticationEntryPoint;
+import callbusLab.zaritalk.Assignment.global.config.jwt.JwtSecurityConfig;
+import callbusLab.zaritalk.Assignment.global.config.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -15,6 +19,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    private final TokenProvider tokenProvider;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -25,12 +33,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity
                 .csrf().disable()
 
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(jwtAccessDeniedHandler)
+
+                .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
                 .and()
                 .authorizeRequests()
-                .antMatchers("/health", "/auth").permitAll()
-                .anyRequest().authenticated();
+                .antMatchers("/health", "/auth","/auth/login").permitAll()
+                .anyRequest().authenticated()
+
+                .and()
+                .apply(new JwtSecurityConfig(tokenProvider));
     }
 }
