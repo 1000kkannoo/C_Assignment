@@ -25,6 +25,8 @@ dependencies {
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
 	// compileOnly
 	compileOnly 'org.projectlombok:lombok'
+	// annotationProcessor
+	annotationProcessor 'org.projectlombok:lombok'
 	// testImplementation
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
