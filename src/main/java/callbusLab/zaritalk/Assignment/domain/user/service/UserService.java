@@ -18,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -45,7 +44,7 @@ public class UserService {
         return user;
     }
 
-    private Authentication getAuthentication(UserDto.loginDto request) {
+    private Authentication getAuthentication(UserDto.LoginDto request) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPw());
         Authentication authentication =
@@ -57,31 +56,33 @@ public class UserService {
     // Service
     // 회원가입
     @Transactional
-    public ResponseEntity<User> register(UserDto.registerDto request) {
+    public ResponseEntity<UserDto.RegisterDto> register(UserDto.RegisterDto request) {
 
         Authority authority = Authority.builder()
                 .authorityName("ROLE_" + request.getAccountType())
                 .build();
 
-        return new ResponseEntity<>(userRepository.save(
-                User.builder()
-                        .nickname(request.getNickname())
-                        .email(request.getEmail())
-                        .pw(passwordEncoder.encode(request.getPw()))
-                        .accountType(request.getAccountType())
-                        .authorities(Collections.singleton(authority))
-                        .quit(true)
-                        .build()
+        return new ResponseEntity<>(UserDto.RegisterDto.response(
+                userRepository.save(
+                        User.builder()
+                                .nickname(request.getNickname())
+                                .email(request.getEmail())
+                                .pw(passwordEncoder.encode(request.getPw()))
+                                .accountType(request.getAccountType())
+                                .authorities(Collections.singleton(authority))
+                                .quit(true)
+                                .build()
+                )
         ), HttpStatus.CREATED);
     }
 
     //로그인
     @Transactional
-    public ResponseEntity<UserDto.loginDto> login(UserDto.loginDto request) {
+    public ResponseEntity<UserDto.LoginDto> login(UserDto.LoginDto request) {
 
         Authentication authentication = getAuthentication(request);
 
-        return new ResponseEntity<>(UserDto.loginDto.response(
+        return new ResponseEntity<>(UserDto.LoginDto.response(
                 getUserInfo(authentication),
                 tokenProvider.createToken(authentication)
         ), HttpStatus.OK);
