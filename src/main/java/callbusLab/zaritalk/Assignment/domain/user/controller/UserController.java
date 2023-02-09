@@ -22,9 +22,17 @@ public class UserController {
     // 회원가입
     @PostMapping("auth")
     public ResponseEntity<User> register(
-            @RequestBody UserDto.register request, HttpServletResponse response
+            @RequestBody UserDto.registerDto request
     ) {
-        return userService.register(request, response);
+        return userService.register(request);
+    }
+
+    // 로그인
+    @PostMapping("auth/login")
+    public ResponseEntity<UserDto.loginDto> login(
+            @RequestBody UserDto.loginDto request
+    ) {
+        return userService.login(request);
     }
 }
 
