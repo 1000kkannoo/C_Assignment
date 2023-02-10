@@ -25,7 +25,7 @@ public class User {
     private String email;
     @Column(name = "pw", nullable = false)
     private String pw;
-    @Column(name = "a_type", nullable = false)
+    @Column(name = "account_type", nullable = false)
     private String accountType;
     @Column(name = "quit", nullable = false)
     private Boolean quit;
