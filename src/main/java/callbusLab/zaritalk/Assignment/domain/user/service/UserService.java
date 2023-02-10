@@ -70,7 +70,7 @@ public class UserService {
                                 .pw(passwordEncoder.encode(request.getPw()))
                                 .accountType(request.getAccountType())
                                 .authorities(Collections.singleton(authority))
-                                .quit(true)
+                                .quit(false)
                                 .build()
                 )
         ), HttpStatus.CREATED);
