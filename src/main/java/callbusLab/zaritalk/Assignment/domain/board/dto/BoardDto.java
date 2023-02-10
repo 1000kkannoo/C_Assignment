@@ -1,13 +1,11 @@
 package callbusLab.zaritalk.Assignment.domain.board.dto;
 
 import callbusLab.zaritalk.Assignment.domain.board.entity.Board;
-import callbusLab.zaritalk.Assignment.domain.user.entity.User;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
 public class BoardDto {
-
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
@@ -15,12 +13,12 @@ public class BoardDto {
     @Getter
     public static class CreateDto {
         private Long id;
-        private User user;
+        private Long userId;
         private String bName;
         private String title;
         private String note;
         private String bImg;
-        private Boolean quit;
+        private Long likeAll;
         private LocalDateTime createAt;
         private LocalDateTime updateAt;
         private LocalDateTime deleteAt;
@@ -28,11 +26,12 @@ public class BoardDto {
         public static BoardDto.CreateDto response(Board board) {
             return CreateDto.builder()
                     .id(board.getId())
+                    .likeAll(board.getLikeAll())
+                    .userId(board.getUser().getId())
                     .bName(board.getBName())
                     .title(board.getTitle())
                     .note(board.getNote())
                     .bImg(board.getBImg())
-                    .quit(board.getQuit())
                     .createAt(board.getCreateAt())
                     .deleteAt(board.getDeleteAt())
                     .updateAt(board.getUpdateAt())
@@ -47,17 +46,18 @@ public class BoardDto {
     @Getter
     public static class PostsListDto {
         private Long id;
-        private Long uId;
+        private Long userId;
         private String bName;
         private String title;
         private String note;
         private String bImg;
-        private Boolean quit;
+        private Long likeAll;
         private LocalDateTime createAt;
         private LocalDateTime updateAt;
         private LocalDateTime deleteAt;
+        private Boolean likeAdd;
 
-        public static BoardDto.PostsListDto response(Board board) {
+        public static BoardDto.PostsListDto response(Board board, Boolean likeAdd) {
             String accountType = board.getUser().getAccountType();
             switch (accountType) {
                 case "LESSOR":
@@ -71,14 +71,15 @@ public class BoardDto {
                     break;
             }
 
-            return BoardDto.PostsListDto.builder()
+            return PostsListDto.builder()
                     .id(board.getId())
-                    .uId(board.getUser().getId())
+                    .likeAdd(likeAdd)
+                    .userId(board.getUser().getId())
                     .bName(board.getBName() + accountType)
                     .title(board.getTitle())
                     .note(board.getNote())
                     .bImg(board.getBImg())
-                    .quit(board.getQuit())
+                    .likeAll(board.getLikeAll())
                     .createAt(board.getCreateAt())
                     .deleteAt(board.getDeleteAt())
                     .updateAt(board.getUpdateAt())
