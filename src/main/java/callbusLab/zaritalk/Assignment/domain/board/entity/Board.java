@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -18,6 +20,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "board")
 @DynamicUpdate
+@Where(clause = "delete_at IS NULL")
+@SQLDelete(sql = "UPDATE board SET delete_at = CURRENT_TIMESTAMP where id = ?")
 public class Board {
 
     @Id
