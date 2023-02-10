@@ -31,8 +31,25 @@ public class BoardController {
         return boardService.findListBoard(page, limit, filter, arrange);
     }
 
+    // 글 삭제
+    @DeleteMapping("board")
+    @PreAuthorize("hasAnyRole('LESSOR','REALTOR','LESSEE')")
+    public ResponseEntity<BoardDto.DeleteDto> boardDelete(
+            @RequestBody BoardDto.DeleteDto request
+    ){
+        return boardService.deleteBoard(request);
+    }
+    // 글 수정
+    @PatchMapping("board")
+    @PreAuthorize("hasAnyRole('LESSOR','REALTOR','LESSEE')")
+    public ResponseEntity<BoardDto.UpdateDto> boardUpdate(
+            @RequestBody BoardDto.UpdateDto request
+    ){
+        return boardService.updateBoard(request);
+    }
     // 좋아요
     @PostMapping("board/like")
+    @PreAuthorize("hasAnyRole('LESSOR','REALTOR','LESSEE')")
     public ResponseEntity<LikesDto.addDto> likeSave(
             @RequestBody LikesDto.addDto request
     ) {
