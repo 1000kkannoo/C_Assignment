@@ -21,19 +21,17 @@ public class BoardDto {
         private Long likeAll;
         private LocalDateTime createAt;
         private LocalDateTime updateAt;
-        private LocalDateTime deleteAt;
 
         public static BoardDto.CreateDto response(Board board) {
             return CreateDto.builder()
                     .id(board.getId())
-                    .likeAll(board.getLikeAll())
                     .userId(board.getUser().getId())
                     .bName(board.getBName())
                     .title(board.getTitle())
                     .note(board.getNote())
                     .bImg(board.getBImg())
+                    .likeAll(board.getLikeAll())
                     .createAt(board.getCreateAt())
-                    .deleteAt(board.getDeleteAt())
                     .updateAt(board.getUpdateAt())
                     .build();
         }
@@ -54,7 +52,6 @@ public class BoardDto {
         private Long likeAll;
         private LocalDateTime createAt;
         private LocalDateTime updateAt;
-        private LocalDateTime deleteAt;
         private Boolean likeAdd;
 
         public static BoardDto.PostsListDto response(Board board, Boolean likeAdd) {
@@ -73,7 +70,6 @@ public class BoardDto {
 
             return PostsListDto.builder()
                     .id(board.getId())
-                    .likeAdd(likeAdd)
                     .userId(board.getUser().getId())
                     .bName(board.getBName() + accountType)
                     .title(board.getTitle())
@@ -81,7 +77,55 @@ public class BoardDto {
                     .bImg(board.getBImg())
                     .likeAll(board.getLikeAll())
                     .createAt(board.getCreateAt())
-                    .deleteAt(board.getDeleteAt())
+                    .updateAt(board.getUpdateAt())
+                    .likeAdd(likeAdd)
+                    .build();
+        }
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    @Setter
+    @Getter
+    public static class DeleteDto {
+        private Long id;
+        private String status;
+
+        public static BoardDto.DeleteDto response(Long id, String status) {
+            return DeleteDto.builder()
+                    .id(id)
+                    .status(status)
+                    .build();
+        }
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    @Setter
+    @Getter
+    public static class UpdateDto {
+        private Long id;
+        private Long userId;
+        private String bName;
+        private String title;
+        private String note;
+        private String bImg;
+        private Long likeAll;
+        private LocalDateTime createAt;
+        private LocalDateTime updateAt;
+
+        public static BoardDto.UpdateDto response(Board board) {
+            return UpdateDto.builder()
+                    .id(board.getId())
+                    .likeAll(board.getLikeAll())
+                    .userId(board.getUser().getId())
+                    .bName(board.getBName())
+                    .title(board.getTitle())
+                    .note(board.getNote())
+                    .bImg(board.getBImg())
+                    .createAt(board.getCreateAt())
                     .updateAt(board.getUpdateAt())
                     .build();
         }
