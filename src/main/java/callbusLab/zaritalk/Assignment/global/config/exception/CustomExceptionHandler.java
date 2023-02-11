@@ -32,20 +32,6 @@ public class CustomExceptionHandler {
                 .build();
     }
 
-    @ResponseStatus(HttpStatus.GONE)
-    @ExceptionHandler(ServerException.class)
-    public CustomErrorResponse serverHandleException(
-            ServerException e,
-            HttpServletRequest request
-    ) {
-        log.error("errorCode : {}, url {}, message: {}",
-                e.getCustomErrorCode(), request.getRequestURI(), e.getDetaliMessage());
-        return CustomErrorResponse.builder()
-                .status(e.getCustomErrorCode())
-                .statusMessage(e.getDetaliMessage())
-                .build();
-    }
-
     @ExceptionHandler(value = {
             HttpRequestMethodNotSupportedException.class,
             MethodArgumentNotValidException.class,
