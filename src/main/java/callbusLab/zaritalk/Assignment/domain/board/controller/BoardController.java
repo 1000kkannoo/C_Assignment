@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 public class BoardController {
@@ -18,7 +20,7 @@ public class BoardController {
     @PostMapping("board")
     @PreAuthorize("hasAnyRole('LESSOR','REALTOR','LESSEE')")
     public ResponseEntity<BoardDto.CreateDto> boardAdd(
-            @RequestBody BoardDto.CreateDto request
+            @Valid @RequestBody final BoardDto.CreateDto request
     ) {
         return boardService.addBoard(request);
     }
@@ -35,7 +37,7 @@ public class BoardController {
     @DeleteMapping("board")
     @PreAuthorize("hasAnyRole('LESSOR','REALTOR','LESSEE')")
     public ResponseEntity<BoardDto.DeleteDto> boardDelete(
-            @RequestBody BoardDto.DeleteDto request
+           @Valid @RequestBody final BoardDto.DeleteDto request
     ){
         return boardService.deleteBoard(request);
     }
@@ -43,7 +45,7 @@ public class BoardController {
     @PatchMapping("board")
     @PreAuthorize("hasAnyRole('LESSOR','REALTOR','LESSEE')")
     public ResponseEntity<BoardDto.UpdateDto> boardUpdate(
-            @RequestBody BoardDto.UpdateDto request
+            @Valid @RequestBody final BoardDto.UpdateDto request
     ){
         return boardService.updateBoard(request);
     }
@@ -51,7 +53,7 @@ public class BoardController {
     @PostMapping("board/like")
     @PreAuthorize("hasAnyRole('LESSOR','REALTOR','LESSEE')")
     public ResponseEntity<LikesDto.addDto> likeSave(
-            @RequestBody LikesDto.addDto request
+            @Valid @RequestBody final LikesDto.addDto request
     ) {
         return boardService.saveLike(request);
     }
