@@ -50,13 +50,4 @@ public class BoardController {
     ) {
         return boardService.updateBoard(request);
     }
-
-    // 좋아요
-    @PostMapping("board/like")
-    @PreAuthorize("hasAnyRole('LESSOR','REALTOR','LESSEE')")
-    public ResponseEntity<LikesDto.addDto> likeSave(
-            @Valid @RequestBody final LikesDto.addDto request
-    ) {
-        return boardService.saveLike(request);
-    }
 }

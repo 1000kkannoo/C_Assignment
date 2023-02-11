@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,87 +32,14 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final LikesRepository likesRepository;
 
-    // method
-    private static Likes addLikesFromRequest(Board board, User user) {
-        return Likes.builder()
-                .board(board)
-                .user(user)
-                .build();
-    }
-
-    private static Board saveLikesBoardFromRequest(Board board, Long likeAll) {
-        return Board.builder()
-                .id(board.getId())
-                .user(board.getUser())
-                .bName(board.getBName())
-                .title(board.getTitle())
-                .note(board.getNote())
-                .bImg(board.getBImg())
-                .likeAll(likeAll)
-                .createAt(board.getCreateAt())
-                .updateAt(board.getUpdateAt())
-                .build();
-    }
-
-    private Board getBoardInfo(
-            Long boardId
-    ) {
-        return boardRepository.findById(boardId).orElseThrow(
-                () -> new CustomException(INTERNAL_SERVER_ERROR)
-        );
-    }
-
-    private User getUserInfo() {
-        return userRepository.findByEmail(SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName()
-        ).orElseThrow(
-                () -> new CustomException(INTERNAL_SERVER_ERROR)
-        );
-    }
-
     // Service
-    private Page<BoardDto.PostsListDto> PostsListDto(
-            Integer page, Integer limit, Sort.Direction asc, String filter, String existsMember
-    ) {
-        Page<Board> list = boardRepository.findAll(PageRequest.of(page - 1, limit, asc, filter));
-        Page<BoardDto.PostsListDto> collect;
-
-        if (existsMember.equals("anonymousUser")) {
-            collect = list.map((Board board) ->
-                    BoardDto.PostsListDto.response(board, false));
-        } else {
-            collect = list.map(
-                    (Board board) -> BoardDto.PostsListDto.response(
-                            board, likesRepository
-                                    .existsByBoardIdAndUserId(board.getId(), getUserInfo().getId())
-                    )
-            );
-        }
-        return collect;
-
-    }
-
     @Transactional
     public ResponseEntity<BoardDto.CreateDto> addBoard(
             BoardDto.CreateDto request
     ) {
-        User user = getUserInfo();
-
         return new ResponseEntity<>(
                 BoardDto.CreateDto.response(
-                        boardRepository.save(
-                                Board.builder()
-                                        .user(user)
-                                        .bName(user.getNickname())
-                                        .title(request.getTitle())
-                                        .note(request.getNote())
-                                        .bImg(request.getBImg())
-                                        .likeAll(0L)
-                                        .createAt(LocalDateTime.now().withNano(0))
-                                        .updateAt(LocalDateTime.now().withNano(0))
-                                        .build())
+                        boardRepository.save(addBoardFromRequest(request, getUserInfo()))
                 ), HttpStatus.CREATED
         );
     }
@@ -135,54 +61,90 @@ public class BoardService {
     }
 
     @Transactional
-    public ResponseEntity<LikesDto.addDto> saveLike(
-            LikesDto.addDto request
-    ) {
-        boolean existsLike = likesRepository.existsByBoardIdAndUserId(
-                request.getId(), getUserInfo().getId());
-        Board board = getBoardInfo(request.getId());
-        User user = getUserInfo();
-
-        // 좋아요가 눌려있는지 여부
-        if (!existsLike) {
-            likesRepository.save(addLikesFromRequest(board, user));
-            boardRepository.save(saveLikesBoardFromRequest(board, board.getLikeAll() + 1));
-            return new ResponseEntity<>(LikesDto.addDto.response("ADD_LIKE_SUCCESS"), HttpStatus.CREATED);
-        } else {
-            likesRepository.deleteByBoardIdAndUserId(request.getId(), getUserInfo().getId());
-            boardRepository.save(saveLikesBoardFromRequest(board, board.getLikeAll() - 1));
-            return new ResponseEntity<>(LikesDto.addDto.response("DELETE_LIKE_SUCCESS"), HttpStatus.OK);
-        }
-    }
-
-    @Transactional
     public ResponseEntity<BoardDto.DeleteDto> deleteBoard(BoardDto.DeleteDto request) {
-        boardRepository.deleteByIdAndUserId(request.getId(), getUserInfo().getId());
+        boardRepository.deleteByIdAndUserId(
+                request.getId(), getUserInfo().getId()
+        );
         return new ResponseEntity<>(
-                BoardDto.DeleteDto.response(
-                        request.getId(), "DELETE_BOARD_TRUE"
-                ), HttpStatus.OK
+                BoardDto.DeleteDto.response(request.getId(), "DELETE_BOARD_TRUE"), HttpStatus.OK
         );
     }
 
     @Transactional
     public ResponseEntity<BoardDto.UpdateDto> updateBoard(BoardDto.UpdateDto request) {
-        Board board = getBoardInfo(request.getId());
         return new ResponseEntity<>(
                 BoardDto.UpdateDto.response(
                         boardRepository.save(
-                                Board.builder()
-                                        .id(board.getId())
-                                        .user(board.getUser())
-                                        .bName(board.getBName())
-                                        .title(request.getTitle())
-                                        .note(request.getNote())
-                                        .bImg(request.getBImg())
-                                        .likeAll(board.getLikeAll())
-                                        .createAt(board.getCreateAt())
-                                        .updateAt(LocalDateTime.now().withNano(0))
-                                        .build())
+                                saveBoardFromRequest(request, getBoardInfo(request.getId()))
+                        )
                 ), HttpStatus.OK
         );
+    }
+
+    // method
+    private static Board addBoardFromRequest(BoardDto.CreateDto request, User user) {
+        return Board.builder()
+                .user(user)
+                .bName(user.getNickname())
+                .title(request.getTitle())
+                .note(request.getNote())
+                .bImg(request.getBImg())
+                .likeAll(0L)
+                .createAt(LocalDateTime.now().withNano(0))
+                .updateAt(LocalDateTime.now().withNano(0))
+                .build();
+    }
+
+    private static Board saveBoardFromRequest(BoardDto.UpdateDto request, Board board) {
+        return Board.builder()
+                .id(board.getId())
+                .user(board.getUser())
+                .bName(board.getBName())
+                .title(request.getTitle())
+                .note(request.getNote())
+                .bImg(request.getBImg())
+                .likeAll(board.getLikeAll())
+                .createAt(board.getCreateAt())
+                .updateAt(LocalDateTime.now().withNano(0))
+                .build();
+    }
+
+    private Board getBoardInfo(
+            Long boardId
+    ) {
+        return boardRepository.findById(boardId).orElseThrow(
+                () -> new CustomException(INTERNAL_SERVER_ERROR)
+        );
+    }
+
+    private User getUserInfo() {
+        return userRepository.findByEmail(SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName()
+        ).orElseThrow(
+                () -> new CustomException(INTERNAL_SERVER_ERROR)
+        );
+    }
+
+    private Page<BoardDto.PostsListDto> PostsListDto(
+            Integer page, Integer limit, Sort.Direction asc, String filter, String existsMember
+    ) {
+        Page<Board> list = boardRepository.findAll(PageRequest.of(page - 1, limit, asc, filter));
+        Page<BoardDto.PostsListDto> collect;
+
+        if (existsMember.equals("anonymousUser")) {
+            collect = list.map(
+                    (Board board) -> BoardDto.PostsListDto.response(
+                            board, false
+                    ));
+        } else {
+            collect = list.map(
+                    (Board board) -> BoardDto.PostsListDto.response(
+                            board, likesRepository.existsByBoardIdAndUserId(board.getId(), getUserInfo().getId())
+                    ));
+        }
+        return collect;
+
     }
 }
