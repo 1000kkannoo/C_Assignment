@@ -19,9 +19,13 @@ public class UserDto implements Serializable {
     @Builder
     public static class RegisterDto {
         private Long id;
+        @NotNull(message = "nickname 값이 입력되지 않았습니다.")
         private String nickname;
+        @NotNull(message = "email 값이 입력되지 않았습니다.")
         private String email;
+        @NotNull(message = "pw 값이 입력되지 않았습니다.")
         private String pw;
+        @NotNull(message = "accountType 값이 등록되지 않았습니다.")
         private String accountType;
         private Boolean quit;
 
@@ -42,18 +46,14 @@ public class UserDto implements Serializable {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Builder
     public static class LoginDto {
-        @NotNull
-        private String atk;
-        @NotNull
-        private String email;
-        @NotNull
         private String nickname;
-        @NotNull
-        private String accountType;
-        @NotNull
-        private Boolean quit;
-        @NotNull
+        @NotNull(message = "email 값이 입력되지 않았습니다.")
+        private String email;
+        @NotNull(message = "pw 값이 입력되지 않았습니다.")
         private String pw;
+        private String accountType;
+        private Boolean quit;
+        private String atk;
 
         public static LoginDto response(User user, String atk) {
             return LoginDto.builder()

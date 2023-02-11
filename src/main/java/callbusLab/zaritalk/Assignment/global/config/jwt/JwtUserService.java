@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static callbusLab.zaritalk.Assignment.global.config.exception.CustomErrorCode.LOGIN_FALSE;
+import static callbusLab.zaritalk.Assignment.global.config.exception.CustomErrorCode.NOT_EXISTS_EMAIL;
 
 @Service
 @Component("userDetailsService")
@@ -29,7 +29,7 @@ public class JwtUserService implements UserDetailsService {
     public UserDetails loadUserByUsername(final String email) {
         return userRepository.findOneWithAuthoritiesByEmail(email)
                 .map(this::createUser)
-                .orElseThrow(() -> new CustomException(LOGIN_FALSE));
+                .orElseThrow(() -> new CustomException(NOT_EXISTS_EMAIL));
     }
 
     private org.springframework.security.core.userdetails.User createUser(User user) {

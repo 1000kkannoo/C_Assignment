@@ -21,11 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.Optional;
 
-import static callbusLab.zaritalk.Assignment.global.config.exception.CustomErrorCode.INTERNAL_SERVER_ERROR;
+import static callbusLab.zaritalk.Assignment.global.config.exception.CustomErrorCode.*;
 
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class UserService {
 
@@ -33,25 +32,6 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final TokenProvider tokenProvider;
-
-    // Validate 및 Method
-    private User getUserInfo(Authentication authentication) {
-        Optional<User> byUser = userRepository.findByEmail(authentication.getName());
-        if (!byUser.isPresent()) {
-            throw new CustomException(INTERNAL_SERVER_ERROR);
-        }
-        User user = byUser.get();
-        return user;
-    }
-
-    private Authentication getAuthentication(UserDto.LoginDto request) {
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPw());
-        Authentication authentication =
-                authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        return authentication;
-    }
 
     // Service
     // 회원가입
@@ -64,14 +44,7 @@ public class UserService {
 
         return new ResponseEntity<>(UserDto.RegisterDto.response(
                 userRepository.save(
-                        User.builder()
-                                .nickname(request.getNickname())
-                                .email(request.getEmail())
-                                .pw(passwordEncoder.encode(request.getPw()))
-                                .accountType(request.getAccountType())
-                                .authorities(Collections.singleton(authority))
-                                .quit(false)
-                                .build()
+                        registerUserFromRequest(request, authority)
                 )
         ), HttpStatus.CREATED);
     }
@@ -79,6 +52,7 @@ public class UserService {
     //로그인
     @Transactional
     public ResponseEntity<UserDto.LoginDto> login(UserDto.LoginDto request) {
+        validateLoginUser(request);
 
         Authentication authentication = getAuthentication(request);
 
@@ -87,6 +61,53 @@ public class UserService {
                 tokenProvider.createToken(authentication)
         ), HttpStatus.OK);
     }
+
+    // Validate
+    private void validateLoginUser(UserDto.LoginDto request) {
+        userRepository.findByEmail(request.getEmail())
+                .orElseThrow(
+                        () -> new CustomException(NOT_EXISTS_EMAIL)
+                );
+
+        if (!passwordEncoder.matches(
+                request.getPw(),
+                userRepository.findByEmail(request.getEmail())
+                        .orElseThrow(
+                                () -> new CustomException(NOT_MATCHED_ID_OR_PASSWORD)
+                        ).getPw())
+        ) {
+            throw new CustomException(NOT_MATCHED_ID_OR_PASSWORD);
+        }
+    }
+
+    // Method
+    private User getUserInfo(Authentication authentication) {
+        return userRepository.findByEmail(authentication.getName())
+                .orElseThrow(
+                        () -> new CustomException(INTERNAL_SERVER_ERROR)
+                );
+    }
+
+    private Authentication getAuthentication(UserDto.LoginDto request) {
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPw());
+        Authentication authentication =
+                authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return authentication;
+    }
+
+    private User registerUserFromRequest(UserDto.RegisterDto request, Authority authority) {
+        return User.builder()
+                .nickname(request.getNickname())
+                .email(request.getEmail())
+                .pw(passwordEncoder.encode(request.getPw()))
+                .accountType(request.getAccountType())
+                .quit(false)
+                .authorities(Collections.singleton(authority))
+                .build();
+    }
+
 
 
 }

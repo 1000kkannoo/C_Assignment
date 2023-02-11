@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -20,7 +22,7 @@ public class UserController {
     // 회원가입
     @PostMapping("auth")
     public ResponseEntity<UserDto.RegisterDto> register(
-            @RequestBody UserDto.RegisterDto request
+            @Valid @RequestBody final UserDto.RegisterDto request
     ) {
         return userService.register(request);
     }
@@ -28,7 +30,7 @@ public class UserController {
     // 로그인
     @PostMapping("auth/login")
     public ResponseEntity<UserDto.LoginDto> login(
-            @RequestBody UserDto.LoginDto request
+            @Valid @RequestBody final UserDto.LoginDto request
     ) {
         return userService.login(request);
     }
