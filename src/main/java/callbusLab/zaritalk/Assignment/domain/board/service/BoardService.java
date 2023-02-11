@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static callbusLab.zaritalk.Assignment.global.config.exception.CustomErrorCode.INTERNAL_SERVER_ERROR;
 
@@ -35,22 +34,25 @@ public class BoardService {
     private final LikesRepository likesRepository;
 
     // method
-    private void likeAllSaveBoard(
-            Board board, Long postLikeAll
-    ) {
-        boardRepository.save(
-                Board.builder()
-                        .id(board.getId())
-                        .user(board.getUser())
-                        .bName(board.getBName())
-                        .title(board.getTitle())
-                        .note(board.getNote())
-                        .bImg(board.getBImg())
-                        .likeAll(postLikeAll)
-                        .createAt(board.getCreateAt())
-                        .updateAt(board.getUpdateAt())
-                        .build()
-        );
+    private static Likes addLikesFromRequest(Board board, User user) {
+        return Likes.builder()
+                .board(board)
+                .user(user)
+                .build();
+    }
+
+    private static Board saveLikesBoardFromRequest(Board board, Long likeAll) {
+        return Board.builder()
+                .id(board.getId())
+                .user(board.getUser())
+                .bName(board.getBName())
+                .title(board.getTitle())
+                .note(board.getNote())
+                .bImg(board.getBImg())
+                .likeAll(likeAll)
+                .createAt(board.getCreateAt())
+                .updateAt(board.getUpdateAt())
+                .build();
     }
 
     private Board getBoardInfo(
@@ -71,6 +73,7 @@ public class BoardService {
         );
     }
 
+    // Service
     private Page<BoardDto.PostsListDto> PostsListDto(
             Integer page, Integer limit, Sort.Direction asc, String filter, String existsMember
     ) {
@@ -92,7 +95,6 @@ public class BoardService {
         return collect;
 
     }
-    // Service
 
     @Transactional
     public ResponseEntity<BoardDto.CreateDto> addBoard(
@@ -133,7 +135,6 @@ public class BoardService {
         return new ResponseEntity<>(collect, HttpStatus.OK);
     }
 
-
     @Transactional
     public ResponseEntity<LikesDto.addDto> saveLike(
             LikesDto.addDto request
@@ -146,20 +147,16 @@ public class BoardService {
         // 좋아요가 눌려있는지 여부
         // 리팩터링 가능해보임
         if (!existsLike) {
-            likesRepository.save(
-                    Likes.builder()
-                            .board(board)
-                            .user(user)
-                            .build()
-            );
-            likeAllSaveBoard(board, board.getLikeAll() + 1);
+            likesRepository.save(addLikesFromRequest(board, user));
+            boardRepository.save(saveLikesBoardFromRequest(board, board.getLikeAll() + 1));
+
             return new ResponseEntity<>(
                     LikesDto.addDto.response(
                             "ADD_LIKE_SUCCESS"
                     ), HttpStatus.CREATED);
         } else {
             likesRepository.deleteByBoardIdAndUserId(request.getId(), getUserInfo().getId());
-            likeAllSaveBoard(board, board.getLikeAll() - 1);
+            boardRepository.save(saveLikesBoardFromRequest(board, board.getLikeAll() - 1));
             return new ResponseEntity<>(
                     LikesDto.addDto.response(
                             "DELETE_LIKE_SUCCESS"
