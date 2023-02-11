@@ -56,24 +56,19 @@ public class BoardService {
     private Board getBoardInfo(
             Long boardId
     ) {
-        Optional<Board> byId = boardRepository.findById(boardId);
-        if (!byId.isPresent()) {
-            throw new CustomException(INTERNAL_SERVER_ERROR);
-        }
-        return byId.get();
+        return boardRepository.findById(boardId).orElseThrow(
+                () -> new CustomException(INTERNAL_SERVER_ERROR)
+        );
     }
 
     private User getUserInfo() {
-        Optional<User> byUser = userRepository.findByEmail(SecurityContextHolder
+        return userRepository.findByEmail(SecurityContextHolder
                 .getContext()
                 .getAuthentication()
                 .getName()
+        ).orElseThrow(
+                () -> new CustomException(INTERNAL_SERVER_ERROR)
         );
-        if (!byUser.isPresent()) {
-            throw new CustomException(INTERNAL_SERVER_ERROR);
-        }
-
-        return byUser.get();
     }
 
     private Page<BoardDto.PostsListDto> PostsListDto(
