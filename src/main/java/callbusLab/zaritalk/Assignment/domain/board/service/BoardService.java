@@ -77,8 +77,7 @@ public class BoardService {
     private Page<BoardDto.PostsListDto> PostsListDto(
             Integer page, Integer limit, Sort.Direction asc, String filter, String existsMember
     ) {
-        Pageable pageWithTenElements = PageRequest.of(page - 1, limit, asc, filter);
-        Page<Board> list = boardRepository.findAll(pageWithTenElements);
+        Page<Board> list = boardRepository.findAll(PageRequest.of(page - 1, limit, asc, filter));
         Page<BoardDto.PostsListDto> collect;
 
         if (existsMember.equals("anonymousUser")) {
@@ -145,22 +144,14 @@ public class BoardService {
         User user = getUserInfo();
 
         // 좋아요가 눌려있는지 여부
-        // 리팩터링 가능해보임
         if (!existsLike) {
             likesRepository.save(addLikesFromRequest(board, user));
             boardRepository.save(saveLikesBoardFromRequest(board, board.getLikeAll() + 1));
-
-            return new ResponseEntity<>(
-                    LikesDto.addDto.response(
-                            "ADD_LIKE_SUCCESS"
-                    ), HttpStatus.CREATED);
+            return new ResponseEntity<>(LikesDto.addDto.response("ADD_LIKE_SUCCESS"), HttpStatus.CREATED);
         } else {
             likesRepository.deleteByBoardIdAndUserId(request.getId(), getUserInfo().getId());
             boardRepository.save(saveLikesBoardFromRequest(board, board.getLikeAll() - 1));
-            return new ResponseEntity<>(
-                    LikesDto.addDto.response(
-                            "DELETE_LIKE_SUCCESS"
-                    ), HttpStatus.OK);
+            return new ResponseEntity<>(LikesDto.addDto.response("DELETE_LIKE_SUCCESS"), HttpStatus.OK);
         }
     }
 
