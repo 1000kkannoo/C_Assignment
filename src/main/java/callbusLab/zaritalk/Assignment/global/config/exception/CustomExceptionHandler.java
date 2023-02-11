@@ -1,14 +1,19 @@
 package callbusLab.zaritalk.Assignment.global.config.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolationException;
 
 import static callbusLab.zaritalk.Assignment.global.config.exception.CustomErrorCode.INTERNAL_SERVER_ERROR;
 import static callbusLab.zaritalk.Assignment.global.config.exception.CustomErrorCode.INVALID_REQUEST;
@@ -34,7 +39,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(value = {
             HttpRequestMethodNotSupportedException.class,
-            MethodArgumentNotValidException.class,
+            ConstraintViolationException.class
     })
     public CustomErrorResponse handleBadRequest(
             Exception e, HttpServletRequest request
@@ -44,7 +49,7 @@ public class CustomExceptionHandler {
 
         return CustomErrorResponse.builder()
                 .status(INVALID_REQUEST)
-                .statusMessage(INVALID_REQUEST.getStatusMessage())
+                .statusMessage(e.getMessage())
                 .build();
     }
 
@@ -59,6 +64,21 @@ public class CustomExceptionHandler {
         return CustomErrorResponse.builder()
                 .status(INTERNAL_SERVER_ERROR)
                 .statusMessage(INVALID_REQUEST.getStatusMessage())
+                .build();
+    }
+
+    @ExceptionHandler(
+            MethodArgumentNotValidException.class
+    )
+    public CustomErrorResponse handleBadRequest(
+            MethodArgumentNotValidException e, HttpServletRequest request
+    ) {
+        log.error("url {}, message: {}",
+                request.getRequestURI(), e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
+
+        return CustomErrorResponse.builder()
+                .status(INVALID_REQUEST)
+                .statusMessage(e.getBindingResult().getAllErrors().get(0).getDefaultMessage())
                 .build();
     }
 }
