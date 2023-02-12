@@ -35,6 +35,7 @@ public class UserService {
     // 회원가입
     @Transactional
     public ResponseEntity<UserDto.RegisterDto> register(UserDto.RegisterDto request) {
+        validateRegister(request);
 
         Authority authority = Authority.builder()
                 .authorityName("ROLE_" + request.getAccountType())
@@ -61,7 +62,9 @@ public class UserService {
     }
 
     // Validate
-    private void validateLogin(UserDto.LoginDto request) {
+    private void validateLogin(
+            UserDto.LoginDto request
+    ) {
         userRepository.findByEmail(request.getEmail())
                 .orElseThrow(
                         () -> new CustomException(NOT_EXISTS_EMAIL)
@@ -78,15 +81,32 @@ public class UserService {
         }
     }
 
+    private void validateRegister(
+            UserDto.RegisterDto request
+    ) {
+        if (userRepository.existsByEmail(request.getEmail())
+        ) {
+            throw new CustomException(ALREADY_EXIST_EMAIL);
+        }
+        if(userRepository.existsByNickname(request.getNickname())
+        ) {
+            throw new CustomException(ALREADY_EXIST_NICKNAME);
+        }
+    }
+
     // Method
-    private User getUserInfo(Authentication authentication) {
+    private User getUserInfo(
+            Authentication authentication
+    ) {
         return userRepository.findByEmail(authentication.getName())
                 .orElseThrow(
                         () -> new CustomException(INTERNAL_SERVER_ERROR)
                 );
     }
 
-    private Authentication getAuthentication(UserDto.LoginDto request) {
+    private Authentication getAuthentication(
+            UserDto.LoginDto request
+    ) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPw());
         Authentication authentication =
@@ -95,7 +115,9 @@ public class UserService {
         return authentication;
     }
 
-    private User registerUserFromRequest(UserDto.RegisterDto request, Authority authority) {
+    private User registerUserFromRequest(
+            UserDto.RegisterDto request, Authority authority
+    ) {
         return User.builder()
                 .nickname(request.getNickname())
                 .email(request.getEmail())

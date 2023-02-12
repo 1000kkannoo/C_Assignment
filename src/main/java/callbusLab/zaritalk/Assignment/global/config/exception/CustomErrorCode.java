@@ -7,6 +7,10 @@ import lombok.Getter;
 @Getter
 public enum CustomErrorCode {
 
+    // 회원가입 검증
+    ALREADY_EXIST_EMAIL("이미 존재하는 이메일 입니다."),
+    ALREADY_EXIST_NICKNAME("이미 존재하는 닉네임 입니다."),
+
     // 로그인 & 로그아웃 검증
     Authentication_Entry_Point( "만료된 JWT 토큰입니다."),
     NOT_EXISTS_EMAIL("해당 계정은 존재하지 않습니다."),
