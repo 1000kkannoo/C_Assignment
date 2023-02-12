@@ -4,8 +4,10 @@ import callbusLab.zaritalk.Assignment.domain.board.entity.Likes;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface LikesRepository extends JpaRepository<Likes, Long> {
-    boolean existsByBoardIdAndUserId(Long bid, Long uid);
-    void deleteByBoardIdAndUserId(Long bid, Long uid);
+    boolean existsByBoardIdAndUserId(Long boardId, Long userId);
+    Optional<Likes> findByBoardIdAndUserId(Long boardId, Long userId);
 }

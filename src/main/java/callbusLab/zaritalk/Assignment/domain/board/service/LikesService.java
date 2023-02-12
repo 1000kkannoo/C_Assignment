@@ -16,7 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static callbusLab.zaritalk.Assignment.global.config.exception.CustomErrorCode.INTERNAL_SERVER_ERROR;
+import static callbusLab.zaritalk.Assignment.global.config.exception.CustomErrorCode.*;
 
 @Service
 @Slf4j
@@ -43,12 +43,14 @@ public class LikesService {
                     addLikesFromRequest(board, user)
             );
             boardRepository.save(
-                    saveLikesBoardFromRequest(board, board.getLikeAll() + 1)
+                    saveLikesBoardFromRequest(
+                            board, board.getLikeAll() + 1
+                    )
             );
             return new ResponseEntity<>(LikesDto.addDto.response("ADD_LIKE_SUCCESS"), HttpStatus.CREATED);
         } else {
-            likesRepository.deleteByBoardIdAndUserId(
-                    request.getId(), getUserInfo().getId()
+            likesRepository.delete(
+                    validateDeleteAndGetLikes(request)
             );
             boardRepository.save(
                     saveLikesBoardFromRequest(board, board.getLikeAll() - 1)
@@ -57,7 +59,16 @@ public class LikesService {
         }
     }
 
-    // method
+    // Validate
+    private Likes validateDeleteAndGetLikes(LikesDto.addDto request) {
+        Likes likes = likesRepository.findByBoardIdAndUserId(request.getId(), getUserInfo().getId())
+                .orElseThrow(
+                        () -> new CustomException(NOT_ADD_LIKES)
+                );
+        return likes;
+    }
+
+    // Method
     private static Likes addLikesFromRequest(Board board, User user) {
         return Likes.builder()
                 .board(board)
