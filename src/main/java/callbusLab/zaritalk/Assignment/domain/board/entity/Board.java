@@ -33,13 +33,13 @@ public class Board {
     private User user;
 
     @Column(name = "board_name", nullable = false)
-    private String bName;
+    private String boardName;
     @Column(name = "title", nullable = false)
     private String title;
     @Column(name = "note", nullable = false)
     private String note;
-    @Column(name = "board_img", nullable = true)
-    private String bImg;
+    @Column(name = "board_image_url", nullable = true)
+    private String boardImageUrl;
     @Column(name = "like_all", nullable = false)
     private Long likeAll;
 
