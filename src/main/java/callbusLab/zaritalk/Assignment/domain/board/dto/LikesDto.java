@@ -3,6 +3,8 @@ package callbusLab.zaritalk.Assignment.domain.board.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
+import javax.validation.constraints.NotNull;
+
 public class LikesDto {
 
     @AllArgsConstructor
@@ -12,6 +14,7 @@ public class LikesDto {
     @Getter
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class addDto {
+        @NotNull(message = "게시글 id를 요청받지 못했습니다.")
         private Long id;
         private String status;
 
