@@ -109,10 +109,13 @@ public class BoardDto {
     @Setter
     @Getter
     public static class UpdateDto {
+        @NotNull(message = "게시글 id를 요청받지 못했습니다.")
         private Long id;
         private Long userId;
         private String boardName;
+        @NotNull(message = "제목을 입력하지 않았습니다.")
         private String title;
+        @NotNull(message = "내용을 입력하지 않았습니다.")
         private String note;
         private String boardImageUrl;
         private Long likeAll;

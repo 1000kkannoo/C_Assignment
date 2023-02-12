@@ -67,11 +67,13 @@ public class BoardService {
     @Transactional
     public ResponseEntity<BoardDto.DeleteDto> deleteBoard(BoardDto.DeleteDto request) {
         boardRepository.delete(
-                validateDeleteAndGetBoard(request)
+                validateMatchedUserAndGetBoard(request.getId())
         );
 
         return new ResponseEntity<>(
-                BoardDto.DeleteDto.response(request.getId(), "DELETE_BOARD_TRUE"), HttpStatus.OK
+                BoardDto.DeleteDto.response(
+                        request.getId(), "DELETE_BOARD_TRUE"
+                ), HttpStatus.OK
         );
     }
 
@@ -80,7 +82,9 @@ public class BoardService {
         return new ResponseEntity<>(
                 BoardDto.UpdateDto.response(
                         boardRepository.save(
-                                saveBoardFromRequest(request, getBoardInfo(request.getId()))
+                                saveBoardFromRequest(
+                                        validateMatchedUserAndGetBoard(request.getId()), request
+                                )
                         )
                 ), HttpStatus.OK
         );
@@ -99,15 +103,14 @@ public class BoardService {
         }
     }
 
-    private Board validateDeleteAndGetBoard(
-            BoardDto.DeleteDto request
+    private Board validateMatchedUserAndGetBoard(
+            Long boardId
     ) {
-        Board board = boardRepository.findByIdAndUserId(
-                request.getId(), getUserInfo().getId()
+        return boardRepository.findByIdAndUserId(
+                boardId, getUserInfo().getId()
         ).orElseThrow(
                 () -> new CustomException(NOT_MATCHED_USER_BOARD)
         );
-        return board;
     }
 
     // method
@@ -127,7 +130,7 @@ public class BoardService {
     }
 
     private static Board saveBoardFromRequest(
-            BoardDto.UpdateDto request, Board board
+            Board board, BoardDto.UpdateDto request
     ) {
         return Board.builder()
                 .id(board.getId())
@@ -140,14 +143,6 @@ public class BoardService {
                 .createAt(board.getCreateAt())
                 .updateAt(LocalDateTime.now().withNano(0))
                 .build();
-    }
-
-    private Board getBoardInfo(
-            Long boardId
-    ) {
-        return boardRepository.findById(boardId).orElseThrow(
-                () -> new CustomException(INTERNAL_SERVER_ERROR)
-        );
     }
 
     private User getUserInfo() {
