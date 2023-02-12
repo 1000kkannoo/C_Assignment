@@ -1,9 +1,7 @@
 package callbusLab.zaritalk.Assignment.domain.board.service;
 
 import callbusLab.zaritalk.Assignment.domain.board.dto.BoardDto;
-import callbusLab.zaritalk.Assignment.domain.board.dto.LikesDto;
 import callbusLab.zaritalk.Assignment.domain.board.entity.Board;
-import callbusLab.zaritalk.Assignment.domain.board.entity.Likes;
 import callbusLab.zaritalk.Assignment.domain.board.repository.BoardRepository;
 import callbusLab.zaritalk.Assignment.domain.board.repository.LikesRepository;
 import callbusLab.zaritalk.Assignment.domain.user.entity.User;
@@ -22,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
-import static callbusLab.zaritalk.Assignment.global.config.exception.CustomErrorCode.INTERNAL_SERVER_ERROR;
+import static callbusLab.zaritalk.Assignment.global.config.exception.CustomErrorCode.*;
 
 @Service
 @Slf4j
@@ -49,13 +47,17 @@ public class BoardService {
     public ResponseEntity<Page<BoardDto.PostsListDto>> findListBoard(
             Integer page, Integer limit, String filter, String arrange
     ) {
+        validateFindListBoard(limit, filter);
+
         String existsMember = SecurityContextHolder.getContext().getAuthentication().getName();
         Page<BoardDto.PostsListDto> collect;
 
         if (arrange.equals("ASC")) {
             collect = PostsListDto(page, limit, Sort.Direction.ASC, filter, existsMember);
-        } else {
+        } else if (arrange.equals("DESC")) {
             collect = PostsListDto(page, limit, Sort.Direction.DESC, filter, existsMember);
+        } else {
+            throw new CustomException(INVALID_REQUEST_ARRANGE);
         }
         return new ResponseEntity<>(collect, HttpStatus.OK);
     }
@@ -81,8 +83,21 @@ public class BoardService {
         );
     }
 
+    // Validate
+    private static void validateFindListBoard(Integer limit, String filter) {
+        if (limit > 15) {
+            throw new CustomException(OVER_LIMIT);
+        }
+        if (!filter.equals("likeAll") && !filter.equals("createAt")
+        ){
+            throw new CustomException(INVALID_REQUEST_FILTER);
+        }
+    }
+
     // method
-    private static Board addBoardFromRequest(BoardDto.CreateDto request, User user) {
+    private static Board addBoardFromRequest(
+            BoardDto.CreateDto request, User user
+    ) {
         return Board.builder()
                 .user(user)
                 .boardName(user.getNickname())
@@ -95,7 +110,9 @@ public class BoardService {
                 .build();
     }
 
-    private static Board saveBoardFromRequest(BoardDto.UpdateDto request, Board board) {
+    private static Board saveBoardFromRequest(
+            BoardDto.UpdateDto request, Board board
+    ) {
         return Board.builder()
                 .id(board.getId())
                 .user(board.getUser())
