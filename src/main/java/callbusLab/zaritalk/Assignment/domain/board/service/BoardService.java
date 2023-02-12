@@ -37,7 +37,9 @@ public class BoardService {
     ) {
         return new ResponseEntity<>(
                 BoardDto.CreateDto.response(
-                        boardRepository.save(addBoardFromRequest(request, getUserInfo()))
+                        boardRepository.save(
+                                addBoardFromRequest(request, getUserInfo())
+                        )
                 ), HttpStatus.CREATED
         );
     }
@@ -64,13 +66,9 @@ public class BoardService {
 
     @Transactional
     public ResponseEntity<BoardDto.DeleteDto> deleteBoard(BoardDto.DeleteDto request) {
-        Board board = boardRepository.findByIdAndUserId(
-                request.getId(), getUserInfo().getId()
-        ).orElseThrow(
-                () -> new CustomException(NOT_MATCHED_USER_BOARD)
+        boardRepository.delete(
+                validateDeleteAndGetBoard(request)
         );
-
-        boardRepository.delete(board);
 
         return new ResponseEntity<>(
                 BoardDto.DeleteDto.response(request.getId(), "DELETE_BOARD_TRUE"), HttpStatus.OK
@@ -89,7 +87,9 @@ public class BoardService {
     }
 
     // Validate
-    private static void validateFindListBoard(Integer limit, String filter) {
+    private static void validateFindListBoard(
+            Integer limit, String filter
+    ) {
         if (limit > 15) {
             throw new CustomException(OVER_LIMIT);
         }
@@ -97,6 +97,17 @@ public class BoardService {
         ){
             throw new CustomException(INVALID_REQUEST_FILTER);
         }
+    }
+
+    private Board validateDeleteAndGetBoard(
+            BoardDto.DeleteDto request
+    ) {
+        Board board = boardRepository.findByIdAndUserId(
+                request.getId(), getUserInfo().getId()
+        ).orElseThrow(
+                () -> new CustomException(NOT_MATCHED_USER_BOARD)
+        );
+        return board;
     }
 
     // method
