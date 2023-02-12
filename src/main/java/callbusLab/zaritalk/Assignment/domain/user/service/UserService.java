@@ -52,7 +52,7 @@ public class UserService {
     //로그인
     @Transactional
     public ResponseEntity<UserDto.LoginDto> login(UserDto.LoginDto request) {
-        validateLoginUser(request);
+        validateLogin(request);
 
         Authentication authentication = getAuthentication(request);
 
@@ -63,7 +63,7 @@ public class UserService {
     }
 
     // Validate
-    private void validateLoginUser(UserDto.LoginDto request) {
+    private void validateLogin(UserDto.LoginDto request) {
         userRepository.findByEmail(request.getEmail())
                 .orElseThrow(
                         () -> new CustomException(NOT_EXISTS_EMAIL)
