@@ -64,9 +64,14 @@ public class BoardService {
 
     @Transactional
     public ResponseEntity<BoardDto.DeleteDto> deleteBoard(BoardDto.DeleteDto request) {
-        boardRepository.deleteByIdAndUserId(
+        Board board = boardRepository.findByIdAndUserId(
                 request.getId(), getUserInfo().getId()
+        ).orElseThrow(
+                () -> new CustomException(NOT_MATCHED_USER_BOARD)
         );
+
+        boardRepository.delete(board);
+
         return new ResponseEntity<>(
                 BoardDto.DeleteDto.response(request.getId(), "DELETE_BOARD_TRUE"), HttpStatus.OK
         );
