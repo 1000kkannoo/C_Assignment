@@ -48,10 +48,10 @@ public class BoardDto {
     public static class PostsListDto {
         private Long id;
         private Long userId;
-        private String bName;
+        private String boardName;
         private String title;
         private String note;
-        private String bImg;
+        private String boardImageUrl;
         private Long likeAll;
         private LocalDateTime createAt;
         private LocalDateTime updateAt;
@@ -74,10 +74,10 @@ public class BoardDto {
             return PostsListDto.builder()
                     .id(board.getId())
                     .userId(board.getUser().getId())
-                    .bName(board.getBoardName() + accountType)
+                    .boardName(board.getBoardName() + accountType)
                     .title(board.getTitle())
                     .note(board.getNote())
-                    .bImg(board.getBoardImageUrl())
+                    .boardImageUrl(board.getBoardImageUrl())
                     .likeAll(board.getLikeAll())
                     .createAt(board.getCreateAt())
                     .updateAt(board.getUpdateAt())
@@ -92,6 +92,7 @@ public class BoardDto {
     @Setter
     @Getter
     public static class DeleteDto {
+        @NotNull(message = "게시글 id를 요청받지 못했습니다.")
         private Long id;
         private String status;
 

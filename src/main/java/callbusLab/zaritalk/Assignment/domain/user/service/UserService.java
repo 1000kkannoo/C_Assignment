@@ -7,7 +7,6 @@ import callbusLab.zaritalk.Assignment.domain.user.repository.UserRepository;
 import callbusLab.zaritalk.Assignment.global.config.exception.CustomException;
 import callbusLab.zaritalk.Assignment.global.config.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import static callbusLab.zaritalk.Assignment.global.config.exception.CustomErrorCode.*;
 
@@ -107,7 +105,6 @@ public class UserService {
                 .authorities(Collections.singleton(authority))
                 .build();
     }
-
 
 
 }
