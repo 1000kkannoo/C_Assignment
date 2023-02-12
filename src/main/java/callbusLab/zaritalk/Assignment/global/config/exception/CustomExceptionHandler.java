@@ -1,16 +1,13 @@
 package callbusLab.zaritalk.Assignment.global.config.exception;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
@@ -81,4 +78,20 @@ public class CustomExceptionHandler {
                 .statusMessage(e.getBindingResult().getAllErrors().get(0).getDefaultMessage())
                 .build();
     }
+
+    @ExceptionHandler(
+            MissingServletRequestParameterException.class
+    )
+    public CustomErrorResponse handleBadRequest(
+            MissingServletRequestParameterException e, HttpServletRequest request
+    ) {
+        log.error("url {}, message: {}",
+                request.getRequestURI(), e.getParameterName() + " 값이 등록되지 않았습니다.");
+
+        return CustomErrorResponse.builder()
+                .status(INVALID_REQUEST)
+                .statusMessage(e.getParameterName() + " 값이 등록되지 않았습니다.")
+                .build();
+    }
+
 }
