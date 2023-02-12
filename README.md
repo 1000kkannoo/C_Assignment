@@ -6,6 +6,8 @@
 
 # 기능 구현
 > 💡 JWT, SpringSecurity를 사용하여 외부사용자 및 회원의 임대인,임차인,공인중개사를 구분하여 해당 검증이 필요한 API의 경우 로그인을 통해 발급받은 AccessToken을 Authorization의 Bearer Token을 통해 구분합니다.
+> 
+> application.properties에 spring.datasource.url / spring.datasource.username / spring.datasource.password 만 시스템에 맞게 설정 해주시면 실행이 가능합니다 !
 - 회원가입 (요구사항 외 기능)
   - 구현 : 임대인, 임차인, 공인중개사와 같은 항목을 선택하고 가입하는 형식으로 구현하였습니다.
   - 검증 : @NotNull을 통한 예외처리를 커스텀하여 핸들링 하였고 이미 존재하는 닉네임 또는 이메일인 경우 커스텀 예외처리 하였습니다.
