@@ -3,6 +3,7 @@ package callbusLab.zaritalk.Assignment.domain.board.dto;
 import callbusLab.zaritalk.Assignment.domain.board.entity.Board;
 import lombok.*;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 public class BoardDto {
@@ -14,10 +15,12 @@ public class BoardDto {
     public static class CreateDto {
         private Long id;
         private Long userId;
-        private String bName;
+        private String boardName;
+        @NotNull(message = "제목을 입력하지 않았습니다.")
         private String title;
+        @NotNull(message = "내용을 입력하지 않았습니다.")
         private String note;
-        private String bImg;
+        private String boardImageUrl;
         private Long likeAll;
         private LocalDateTime createAt;
         private LocalDateTime updateAt;
@@ -26,10 +29,10 @@ public class BoardDto {
             return CreateDto.builder()
                     .id(board.getId())
                     .userId(board.getUser().getId())
-                    .bName(board.getBName())
+                    .boardName(board.getBoardName())
                     .title(board.getTitle())
                     .note(board.getNote())
-                    .bImg(board.getBImg())
+                    .boardImageUrl(board.getBoardImageUrl())
                     .likeAll(board.getLikeAll())
                     .createAt(board.getCreateAt())
                     .updateAt(board.getUpdateAt())
@@ -71,10 +74,10 @@ public class BoardDto {
             return PostsListDto.builder()
                     .id(board.getId())
                     .userId(board.getUser().getId())
-                    .bName(board.getBName() + accountType)
+                    .bName(board.getBoardName() + accountType)
                     .title(board.getTitle())
                     .note(board.getNote())
-                    .bImg(board.getBImg())
+                    .bImg(board.getBoardImageUrl())
                     .likeAll(board.getLikeAll())
                     .createAt(board.getCreateAt())
                     .updateAt(board.getUpdateAt())
@@ -108,10 +111,10 @@ public class BoardDto {
     public static class UpdateDto {
         private Long id;
         private Long userId;
-        private String bName;
+        private String boardName;
         private String title;
         private String note;
-        private String bImg;
+        private String boardImageUrl;
         private Long likeAll;
         private LocalDateTime createAt;
         private LocalDateTime updateAt;
@@ -121,10 +124,10 @@ public class BoardDto {
                     .id(board.getId())
                     .likeAll(board.getLikeAll())
                     .userId(board.getUser().getId())
-                    .bName(board.getBName())
+                    .boardName(board.getBoardName())
                     .title(board.getTitle())
                     .note(board.getNote())
-                    .bImg(board.getBImg())
+                    .boardImageUrl(board.getBoardImageUrl())
                     .createAt(board.getCreateAt())
                     .updateAt(board.getUpdateAt())
                     .build();
