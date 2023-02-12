@@ -1,6 +1,6 @@
-package callbusLab.zaritalk.Assignment.domain.board.repository;
+package callbusLab.zaritalk.Assignment.domain.likes.repository;
 
-import callbusLab.zaritalk.Assignment.domain.board.entity.Likes;
+import callbusLab.zaritalk.Assignment.domain.likes.entity.Likes;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

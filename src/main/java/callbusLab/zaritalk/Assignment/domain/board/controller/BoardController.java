@@ -1,7 +1,6 @@
 package callbusLab.zaritalk.Assignment.domain.board.controller;
 
 import callbusLab.zaritalk.Assignment.domain.board.dto.BoardDto;
-import callbusLab.zaritalk.Assignment.domain.board.dto.LikesDto;
 import callbusLab.zaritalk.Assignment.domain.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

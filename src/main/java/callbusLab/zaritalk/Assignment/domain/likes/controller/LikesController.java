@@ -1,7 +1,7 @@
-package callbusLab.zaritalk.Assignment.domain.board.controller;
+package callbusLab.zaritalk.Assignment.domain.likes.controller;
 
-import callbusLab.zaritalk.Assignment.domain.board.dto.LikesDto;
-import callbusLab.zaritalk.Assignment.domain.board.service.LikesService;
+import callbusLab.zaritalk.Assignment.domain.likes.dto.LikesDto;
+import callbusLab.zaritalk.Assignment.domain.likes.service.LikesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

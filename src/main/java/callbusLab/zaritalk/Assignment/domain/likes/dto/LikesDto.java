@@ -1,4 +1,4 @@
-package callbusLab.zaritalk.Assignment.domain.board.dto;
+package callbusLab.zaritalk.Assignment.domain.likes.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;

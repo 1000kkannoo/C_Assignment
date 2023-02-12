@@ -1,5 +1,6 @@
-package callbusLab.zaritalk.Assignment.domain.board.entity;
+package callbusLab.zaritalk.Assignment.domain.likes.entity;
 
+import callbusLab.zaritalk.Assignment.domain.board.entity.Board;
 import callbusLab.zaritalk.Assignment.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

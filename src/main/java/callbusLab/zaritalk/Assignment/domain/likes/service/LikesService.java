@@ -1,10 +1,10 @@
-package callbusLab.zaritalk.Assignment.domain.board.service;
+package callbusLab.zaritalk.Assignment.domain.likes.service;
 
-import callbusLab.zaritalk.Assignment.domain.board.dto.LikesDto;
+import callbusLab.zaritalk.Assignment.domain.likes.dto.LikesDto;
 import callbusLab.zaritalk.Assignment.domain.board.entity.Board;
-import callbusLab.zaritalk.Assignment.domain.board.entity.Likes;
+import callbusLab.zaritalk.Assignment.domain.likes.entity.Likes;
 import callbusLab.zaritalk.Assignment.domain.board.repository.BoardRepository;
-import callbusLab.zaritalk.Assignment.domain.board.repository.LikesRepository;
+import callbusLab.zaritalk.Assignment.domain.likes.repository.LikesRepository;
 import callbusLab.zaritalk.Assignment.domain.user.entity.User;
 import callbusLab.zaritalk.Assignment.domain.user.repository.UserRepository;
 import callbusLab.zaritalk.Assignment.global.config.exception.CustomException;
