@@ -47,7 +47,9 @@ public class LikesService {
                             board, board.getLikeAll() + 1
                     )
             );
-            return new ResponseEntity<>(LikesDto.addDto.response("ADD_LIKE_SUCCESS"), HttpStatus.CREATED);
+            return new ResponseEntity<>(LikesDto.addDto.response(
+                    "ADD_LIKE_SUCCESS"
+            ), HttpStatus.CREATED);
         } else {
             likesRepository.delete(
                     validateDeleteAndGetLikes(request)
@@ -55,28 +57,35 @@ public class LikesService {
             boardRepository.save(
                     saveLikesBoardFromRequest(board, board.getLikeAll() - 1)
             );
-            return new ResponseEntity<>(LikesDto.addDto.response("DELETE_LIKE_SUCCESS"), HttpStatus.OK);
+            return new ResponseEntity<>(LikesDto.addDto.response(
+                    "DELETE_LIKE_SUCCESS"
+            ), HttpStatus.OK);
         }
     }
 
     // Validate
     private Likes validateDeleteAndGetLikes(LikesDto.addDto request) {
-        Likes likes = likesRepository.findByBoardIdAndUserId(request.getId(), getUserInfo().getId())
-                .orElseThrow(
+        Likes likes = likesRepository.findByBoardIdAndUserId(
+                request.getId(), getUserInfo().getId()
+                ).orElseThrow(
                         () -> new CustomException(NOT_ADD_LIKES)
                 );
         return likes;
     }
 
     // Method
-    private static Likes addLikesFromRequest(Board board, User user) {
+    private static Likes addLikesFromRequest(
+            Board board, User user
+    ) {
         return Likes.builder()
                 .board(board)
                 .user(user)
                 .build();
     }
 
-    private static Board saveLikesBoardFromRequest(Board board, Long likeAll) {
+    private static Board saveLikesBoardFromRequest(
+            Board board, Long likeAll
+    ) {
         return Board.builder()
                 .id(board.getId())
                 .user(board.getUser())
@@ -93,13 +102,16 @@ public class LikesService {
     private Board getBoardInfo(
             Long boardId
     ) {
-        return boardRepository.findById(boardId).orElseThrow(
+        return boardRepository.findById(
+                boardId
+        ).orElseThrow(
                 () -> new CustomException(INTERNAL_SERVER_ERROR)
         );
     }
 
     private User getUserInfo() {
-        return userRepository.findByEmail(SecurityContextHolder
+        return userRepository.findByEmail(
+                SecurityContextHolder
                 .getContext()
                 .getAuthentication()
                 .getName()

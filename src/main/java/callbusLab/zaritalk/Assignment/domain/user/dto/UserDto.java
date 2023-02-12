@@ -19,13 +19,13 @@ public class UserDto implements Serializable {
     @Builder
     public static class RegisterDto {
         private Long id;
-        @NotNull(message = "nickname 값이 입력되지 않았습니다.")
+        @NotNull(message = "닉네임이 입력되지 않았습니다.")
         private String nickname;
-        @NotNull(message = "email 값이 입력되지 않았습니다.")
+        @NotNull(message = "이메일이 입력되지 않았습니다.")
         private String email;
-        @NotNull(message = "pw 값이 입력되지 않았습니다.")
+        @NotNull(message = "비밀번호가 입력되지 않았습니다.")
         private String pw;
-        @NotNull(message = "accountType 값이 등록되지 않았습니다.")
+        @NotNull(message = "계정 유형이 등록되지 않았습니다.")
         private String accountType;
         private Boolean quit;
 
@@ -47,9 +47,9 @@ public class UserDto implements Serializable {
     @Builder
     public static class LoginDto {
         private String nickname;
-        @NotNull(message = "email 값이 입력되지 않았습니다.")
+        @NotNull(message = "이메일이 입력되지 않았습니다.")
         private String email;
-        @NotNull(message = "pw 값이 입력되지 않았습니다.")
+        @NotNull(message = "비밀번호가 입력되지 않았습니다.")
         private String pw;
         private String accountType;
         private Boolean quit;

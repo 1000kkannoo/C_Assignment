@@ -40,8 +40,7 @@ public class BoardService {
                         boardRepository.save(
                                 addBoardFromRequest(request, getUserInfo())
                         )
-                ), HttpStatus.CREATED
-        );
+                ), HttpStatus.CREATED);
     }
 
     // 클라이언트가 요청한 글 목록 / 페이지 안의 목록 수 / 어느 순으로 정렬할지 / 오름차순 or 내림차순
@@ -71,8 +70,7 @@ public class BoardService {
         return new ResponseEntity<>(
                 BoardDto.DeleteDto.response(
                         request.getId(), "DELETE_BOARD_TRUE"
-                ), HttpStatus.OK
-        );
+                ), HttpStatus.OK);
     }
 
     @Transactional
@@ -84,8 +82,7 @@ public class BoardService {
                                         validateMatchedUserAndGetBoard(request.getId()), request
                                 )
                         )
-                ), HttpStatus.OK
-        );
+                ), HttpStatus.OK);
     }
 
     // Validate
@@ -148,7 +145,8 @@ public class BoardService {
     }
 
     private User getUserInfo() {
-        return userRepository.findByEmail(SecurityContextHolder
+        return userRepository.findByEmail(
+                SecurityContextHolder
                 .getContext()
                 .getAuthentication()
                 .getName()
