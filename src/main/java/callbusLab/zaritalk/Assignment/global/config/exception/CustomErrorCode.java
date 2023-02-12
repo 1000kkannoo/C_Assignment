@@ -20,6 +20,8 @@ public enum CustomErrorCode {
     // 글 삭제 검증
     NOT_MATCHED_USER_BOARD("해당 게시글은 사용자가 작성한 글이 아닙니다."),
 
+    NOT_ADD_LIKES("좋아요 삭제 로직에서 비정상적인 접근입니다."),
+
 
     // 알수 없는 오류의 처리
     INTERNAL_SERVER_ERROR("서버에 오류가 발생했습니다."),
