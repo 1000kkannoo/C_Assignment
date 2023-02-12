@@ -49,17 +49,15 @@ public class BoardService {
     public ResponseEntity<Page<BoardDto.PostsListDto>> findListBoard(
             Integer page, Integer limit, String filter, String arrange
     ) {
-        validateFindListBoard(limit, filter);
+        validateFindListBoard(limit, filter, arrange);
 
         String existsMember = SecurityContextHolder.getContext().getAuthentication().getName();
         Page<BoardDto.PostsListDto> collect;
 
         if (arrange.equals("ASC")) {
             collect = PostsListDto(page, limit, Sort.Direction.ASC, filter, existsMember);
-        } else if (arrange.equals("DESC")) {
-            collect = PostsListDto(page, limit, Sort.Direction.DESC, filter, existsMember);
         } else {
-            throw new CustomException(INVALID_REQUEST_ARRANGE);
+            collect = PostsListDto(page, limit, Sort.Direction.DESC, filter, existsMember);
         }
         return new ResponseEntity<>(collect, HttpStatus.OK);
     }
@@ -92,7 +90,7 @@ public class BoardService {
 
     // Validate
     private static void validateFindListBoard(
-            Integer limit, String filter
+            Integer limit, String filter, String arrnage
     ) {
         if (limit > 15) {
             throw new CustomException(OVER_LIMIT);
@@ -100,6 +98,10 @@ public class BoardService {
         if (!filter.equals("likeAll") && !filter.equals("createAt")
         ){
             throw new CustomException(INVALID_REQUEST_FILTER);
+        }
+        if (!arrnage.equals("ASC") && !arrnage.equals("DESC")
+        ){
+            throw new CustomException(INVALID_REQUEST_ARRANGE);
         }
     }
 
